@@ -1,43 +1,66 @@
-import Image from "next/image";
-import Link from "next/link";
+import { Search } from "lucide-react";
+import CountryCard from "./components/CountryCard";
 
-type CountryPropTypes = {
+export type CountryPropTypes = {
   name: {
     common: string
-  },
+  };
   translations: {
     por: {
       common: string
     }
-  },
+  };
   flags: {
     svg: string,
     alt: string
-  },
-  population: string,
+  };
+  continents: string;
+  population: number;
+  capital: string;
+  region: string;
+  subregion: string;
+  languages?: {
+    [key: string]: string;
+  };
+  borders?: string[];
+  cca3: string;
+  
 }
 
 export default async function Home() {
   const response = await fetch('https://restcountries.com/v3.1/all')
   const countries: CountryPropTypes[] = await response.json();
-  console.log(countries)
-
+  
   return (
-    <section className="max-w-[1200px] w-full mx-auto px-6 py-4 grid grid-cols-4 items-center justify-between gap-3">
-      {
-        countries && countries.map( (country) => (
-          <div key={country.name.common}>
-            <Link href='/' className="block h-64 min-w-full p-2 bg-white border-2 rounded-xl hover:bg-gray-100 hover:border-gray-200 transition-all">
-              <div className="relative w-full h-40 p-2 overflow-hidden rounded-xl mb-2">
-                <Image fill src={country.flags.svg} alt={country.flags.alt} className="object-cover"/>
-              </div>
-              <span className="block text-sm"><strong>Nome: </strong>{country.translations.por.common}</span>
-              <span className="block text-sm"><strong>População: </strong>{country.population}</span>
-              <span className="block text-sm"><strong>Nome: </strong>{country.translations.por.common}</span>
-            </Link>
-          </div>
-        ))
-      }
-    </section>
+    <>
+      <div className="max-w-[1200px] w-full mx-auto px-6 pt-4 flex flex-col md:flex-row justify-between gap-3">
+        <div className="flex items-center bg-white rounded px-2 py-2 max-w-[560px] w-full">
+          <Search size={20} className="ml-2 text-gray-400"/>
+          <input type="text" placeholder="Pesquise o nome do país" className="rounded px-2 w-full"/>
+        </div>
+        <div>
+          <select name="regions" id="regions" className="rounded px-6 py-2">
+            <option value="all">All Regions</option>
+            <option value="america">America</option>
+            <option value="europe">Europa</option>
+            <option value="asia">Ásia</option>
+          </select>
+        </div>
+      </div>
+      <section className="max-w-[1200px] w-full mx-auto px-6 py-4 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {
+          countries && countries.map( (country, index) => (
+            <div key={country.name.common}>
+              <CountryCard 
+              key={index}
+              name={country.name.common}
+              flag={country.flags.svg}
+              ptName={country.translations.por.common}
+              />
+            </div>
+          ))
+        }
+      </section>
+    </>
   );
 }
